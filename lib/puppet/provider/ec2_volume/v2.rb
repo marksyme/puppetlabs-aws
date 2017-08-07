@@ -40,6 +40,7 @@ Puppet::Type.type(:ec2_volume).provide(:v2, :parent => PuppetX::Puppetlabs::Aws)
       snapshot_id: volume.snapshot_id,
       ensure: :present,
       region: region,
+      instance_id: instance,
     }
     config[:attach] = attachments unless attachments.empty?
     config
