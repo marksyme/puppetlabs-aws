@@ -36,33 +36,28 @@ Puppet::Type.type(:ec2_volume).provide(:v2, :parent => PuppetX::Puppetlabs::Aws)
       {
         instance_id: att.instance_id,
         device: att.device,
-        delete_on_termination: att.delete_on_termination
       }
     end
     config = {
-      name: name,
+#      name: name,
       volume_id: volume.volume_id,
-      size: volume.size,
-      iops: volume.iops,
-      volume_type: volume.volume_type,
-      availability_zone: volume.availability_zone,
-      snapshot_id: volume.snapshot_id,
+#      size: volume.size,
+#      iops: volume.iops,
+#      volume_type: volume.volume_type,
+#      availability_zone: volume.availability_zone,
+#      snapshot_id: volume.snapshot_id,
       ensure: :present,
       region: region,
-    }
+      instance_id: instance,
+      device: device,
+      
     config[:attach] = attachments unless attachments.empty?
     config
   end
-
+=begin
   def exists?
     Puppet.info("Checking if EC2 volume #{name} exists in region #{target_region}")
     @property_hash[:ensure] == :present
-  end
-
-  def create_from_snapshot(config)
-    snapshot = resource[:snapshot_id] ? resource[:snapshot_id] : false
-    config['snapshot_id'] = snapshot if snapshot
-    config
   end
 
   def ec2
@@ -78,50 +73,6 @@ Puppet::Type.type(:ec2_volume).provide(:v2, :parent => PuppetX::Puppetlabs::Aws)
     Puppet.info("Attaching Volume #{volume_id} to ec2 instance #{config[:instance_id]}")
     ec2.wait_until(:volume_available, volume_ids: [volume_id])
     ec2.attach_volume(config)
-    if (resource[:attach].has_key?("delete_on_termination") ? resource[:attach]["delete_on_termination"] : false) then
-      Puppet.info("Modifying instance attribute delete_on_termination=#{resource[:attach]["delete_on_termination"]} for #{resource[:attach]["device"]} on ec2 instance #{config[:instance_id]}")
-      config = {}
-      config[:instance_id] = resource[:attach]["instance_id"]
-      config[:block_device_mappings] = [{ :device_name=> resource[:attach]["device"], :ebs=> { :delete_on_termination=> true } }]
-      ec2.modify_instance_attribute(config)
-    end
-  end
-
-  def create
-    Puppet.info("Creating Volume #{name} in region #{target_region}")
-    config = {
-      size: resource[:size],
-      availability_zone: resource[:availability_zone],
-      volume_type: resource[:volume_type],
-      iops: resource[:iops],
-      encrypted: resource[:encrypted],
-      kms_key_id: resource[:kms_key_id],
-    }
-
-    config = create_from_snapshot(config)
-    response = ec2.create_volume(config)
-
-    ec2.create_tags(
-      resources: [response.volume_id],
-      tags: tags_for_resource
-    ) if resource[:tags]
-
-    attach_instance(response.volume_id) if resource[:attach]
-
-    @property_hash[:id] = response.volume_id
-    @property_hash[:ensure] = :present
-  end
-
-  def destroy
-    Puppet.info("Deleting Volume #{name} in region #{target_region}")
-    # Detach if in use first
-    config = {
-      volume_id: volume_id,
-      force: true
-    }
-    ec2.detach_volume(config) unless @property_hash[:attach] == nil
-    ec2.wait_until(:volume_available, volume_ids: [volume_id])
-    ec2.delete_volume(volume_id: volume_id)
-    @property_hash[:ensure] = :absent
   end
 end
+=end
