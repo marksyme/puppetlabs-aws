@@ -1,3 +1,5 @@
+require_relative '../../../puppet_x/puppetlabs/aws'
+
 Puppet::Type.type(:ec2_volume).provide(:v2, :parent => PuppetX::Puppetlabs::Aws) do
   confine feature: :aws
 
@@ -40,9 +42,7 @@ Puppet::Type.type(:ec2_volume).provide(:v2, :parent => PuppetX::Puppetlabs::Aws)
     config = {
       name: name,
       volume_id: volume.volume_id,
-      volume_type: volume.volume_type,
       availability_zone: volume.availability_zone,
-      ensure: :present,
       region: region,
     }
     config[:attach] = attachments unless attachments.empty?
@@ -76,7 +76,6 @@ Puppet::Type.type(:ec2_volume).provide(:v2, :parent => PuppetX::Puppetlabs::Aws)
       ec2.modify_instance_attribute(config)
     end
   end
-
   def create
   end
 end
