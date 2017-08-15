@@ -80,7 +80,6 @@ Puppet::Type.type(:ec2_volume).provide(:v2, :parent => PuppetX::Puppetlabs::Aws)
   end
 
   def attach_instance(volume_id)
-    debug("attach_debug")
     config = {}
     config[:instance_id] = resource[:attach]["instance_id"]
     config[:volume_id] = volume_id
@@ -98,7 +97,6 @@ Puppet::Type.type(:ec2_volume).provide(:v2, :parent => PuppetX::Puppetlabs::Aws)
   end
 
   def create
-    debug("create_debug")
     Puppet.info("Creating Volume #{name} in region #{target_region}")
     config = {
       size: resource[:size],
@@ -108,7 +106,7 @@ Puppet::Type.type(:ec2_volume).provide(:v2, :parent => PuppetX::Puppetlabs::Aws)
       encrypted: resource[:encrypted],
       kms_key_id: resource[:kms_key_id],
     }
-    if volume_id =~ /^vol-/
+    if volume_id == /^vol-/
       attach_instance(volume_id)
     else
       config = create_from_snapshot(config)
