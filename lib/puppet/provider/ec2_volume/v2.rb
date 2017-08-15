@@ -107,9 +107,9 @@ Puppet::Type.type(:ec2_volume).provide(:v2, :parent => PuppetX::Puppetlabs::Aws)
       kms_key_id: resource[:kms_key_id],
     }
 
-    if volume_id.is_a? String
+    if volume_id.is_a? String # If volume exists this will be a string
       attach_instance(volume_id)
-    elsif volume_id.is_a? Symbol
+    elsif volume_id.is_a? Symbol # If volume does not exist this will be a symbol
       config = create_from_snapshot(config)
       response = ec2.create_volume(config)
 
