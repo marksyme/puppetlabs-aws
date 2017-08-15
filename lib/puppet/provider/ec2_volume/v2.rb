@@ -106,21 +106,28 @@ Puppet::Type.type(:ec2_volume).provide(:v2, :parent => PuppetX::Puppetlabs::Aws)
       encrypted: resource[:encrypted],
       kms_key_id: resource[:kms_key_id],
     }
-    if volume_id == /^vol-/
-      attach_instance(volume_id)
-    else
-      config = create_from_snapshot(config)
-      response = ec2.create_volume(config)
 
-      ec2.create_tags(
-        resources: [response.volume_id],
-        tags: tags_for_resource
-      ) if resource[:tags]
-      puts resource
-      attach_instance(response.volume_id) if resource[:attach]
-      @property_hash[:id] = response.volume_id
-      @property_hash[:ensure] = :present
-    end
+if volume_id.is_a? String
+  puts "#{volume_id} is a string"
+elsif volume_id.is_a? Symbol
+  puts "#{volume_id} is a symbol"
+end
+
+#    if volume_id == /^vol-/
+#      attach_instance(volume_id)
+#    else
+#      config = create_from_snapshot(config)
+#      response = ec2.create_volume(config)
+
+#      ec2.create_tags(
+#        resources: [response.volume_id],
+#        tags: tags_for_resource
+#      ) if resource[:tags]
+#      puts resource
+#      attach_instance(response.volume_id) if resource[:attach]
+#      @property_hash[:id] = response.volume_id
+#      @property_hash[:ensure] = :present
+#    end
   end
 
   def destroy
