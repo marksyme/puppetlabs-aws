@@ -27,7 +27,6 @@ Puppet::Type.type(:ec2_volume).provide(:v2, parent: PuppetX::Puppetlabs::Aws) do
 
   def self.prefetch(resources)
     with_retries(:max_tries => @@RETRIES,
-
                  :base_sleep_seconds => 30,
                  :max_sleep_seconds => 60) do |attempt|
       Puppet.notice("Attempt #{attempt} of prefetch ebs volume")
